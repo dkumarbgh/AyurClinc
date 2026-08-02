@@ -1,0 +1,2 @@
+# AyurClinc
+Ayur Clinic
