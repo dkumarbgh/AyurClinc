@@ -18,6 +18,12 @@ Views.Settings = (() => {
             <div class="form-row"><label>Email</label><input type="email" name="email" value="${App.escapeHtml(settings.email)}" /></div>
           </div>
           <div class="form-row"><label>Registration number</label><input name="registration_number" placeholder="Clinic license / GST / registration number" value="${App.escapeHtml(settings.registration_number)}" /></div>
+          <div class="section-title" style="margin-top:20px;">Default signing doctor</div>
+          <p class="helper-text" style="margin-top:-6px; margin-bottom:12px;">Pre-fills the signature on certificates and treatment documents &mdash; editable per document.</p>
+          <div class="form-grid">
+            <div class="form-row"><label>Doctor name</label><input name="default_doctor_name" placeholder="e.g. Dr Rashmi S" value="${App.escapeHtml(settings.default_doctor_name)}" /></div>
+            <div class="form-row"><label>Registration No.</label><input name="default_doctor_reg_no" placeholder="e.g. KAUPB No.24617A" value="${App.escapeHtml(settings.default_doctor_reg_no)}" /></div>
+          </div>
           <button type="submit" class="btn">Save settings</button>
         </form>
       </div>

@@ -12,20 +12,23 @@ router.get('/', (req, res) => {
 // PUT /api/settings — admin only
 router.put('/', requireRole('admin'), (req, res) => {
   const existing = db.prepare('SELECT * FROM clinic_settings WHERE id = 1').get();
-  const { clinic_name, address, phone, email, registration_number } = req.body;
+  const { clinic_name, address, phone, email, registration_number, default_doctor_name, default_doctor_reg_no } = req.body;
   if (!clinic_name || !clinic_name.trim()) {
     return res.status(400).json({ error: 'clinic_name is required.' });
   }
   db.prepare(
     `UPDATE clinic_settings
-     SET clinic_name=?, address=?, phone=?, email=?, registration_number=?, updated_at=datetime('now')
+     SET clinic_name=?, address=?, phone=?, email=?, registration_number=?,
+         default_doctor_name=?, default_doctor_reg_no=?, updated_at=datetime('now')
      WHERE id=1`
   ).run(
     clinic_name,
     address ?? existing.address,
     phone ?? existing.phone,
     email ?? existing.email,
-    registration_number ?? existing.registration_number
+    registration_number ?? existing.registration_number,
+    default_doctor_name ?? existing.default_doctor_name,
+    default_doctor_reg_no ?? existing.default_doctor_reg_no
   );
   res.json(db.prepare('SELECT * FROM clinic_settings WHERE id = 1').get());
 });

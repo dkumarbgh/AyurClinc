@@ -81,6 +81,8 @@ function ensureColumn(table, column, definition) {
 
 ensureColumn('admin_users', 'role', "TEXT NOT NULL DEFAULT 'admin'");
 ensureColumn('admin_users', 'active', 'INTEGER NOT NULL DEFAULT 1');
+ensureColumn('clinic_settings', 'default_doctor_name', 'TEXT');
+ensureColumn('clinic_settings', 'default_doctor_reg_no', 'TEXT');
 
 // Ensure the 4 therapy rooms always exist
 const roomCount = db.prepare('SELECT COUNT(*) AS c FROM rooms').get().c;

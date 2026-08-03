@@ -93,11 +93,12 @@ Views.Patients = (() => {
   const IMPORT_TEMPLATE_HEADERS = [
     'full_name', 'phone', 'whatsapp_number', 'dob', 'gender', 'email',
     'address', 'guardian_name', 'guardian_phone', 'blood_group', 'medical_notes',
+    'enroll_swarna', 'swarna_start_date',
   ];
 
   function downloadImportTemplate() {
     const csv = IMPORT_TEMPLATE_HEADERS.join(',') + '\n' +
-      'Baby Aarav,+919811100011,,2025-01-15,male,,,Sunita Sharma,+919822200022,,\n';
+      'Baby Aarav,+919811100011,,2025-01-15,male,,,Sunita Sharma,+919822200022,,,yes,2026-08-05\n';
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -111,7 +112,9 @@ Views.Patients = (() => {
       <h2>Import patients</h2>
       <p class="helper-text">Upload an Excel (.xlsx/.xls), CSV, or JSON file. Column names are matched
         flexibly (e.g. "Name", "Patient Name", and "full_name" all work) &mdash; only <strong>name</strong>
-        and <strong>phone</strong> are required. Patients with a phone number that already exists are skipped.</p>
+        and <strong>phone</strong> are required. Patients with a phone number that already exists are skipped.
+        To auto-enroll a row in Swarna Prashana, put "yes" in an <strong>enroll_swarna</strong> column
+        (optionally with a <strong>swarna_start_date</strong> column &mdash; defaults to today if left blank).</p>
       <p style="margin:10px 0;"><button type="button" class="btn secondary small" id="download-template-btn">Download CSV template</button></p>
       <form id="import-form">
         <div class="form-row">
@@ -141,7 +144,7 @@ Views.Patients = (() => {
         const resultEl = document.getElementById('import-result');
         resultEl.innerHTML = `
           <div class="card" style="margin:14px 0; background: var(--teal-100); border-color: var(--teal-100);">
-            <strong>${result.imported}</strong> imported, <strong>${result.skipped}</strong> skipped.
+            <strong>${result.imported}</strong> imported, <strong>${result.skipped}</strong> skipped${result.swarnaEnrolled ? `, <strong>${result.swarnaEnrolled}</strong> enrolled in Swarna Prashana` : ''}.
             ${result.errors.length ? `
               <div style="max-height:160px; overflow-y:auto; margin-top:8px; font-size:12px;">
                 ${result.errors.slice(0, 50).map((e) => `<div>Row ${e.row}: ${App.escapeHtml(e.reason)}</div>`).join('')}

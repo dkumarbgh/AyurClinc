@@ -25,7 +25,8 @@ A Node.js + SQLite application for a clinic that handles:
 - **Fee collection** — invoices, partial/full payments, and automatic WhatsApp
   payment confirmations.
 - **Admin dashboard** — a browser-based UI (no separate frontend build step
-  needed) covering all of the above.
+  needed) covering all of the above, responsive down to phone-sized screens
+  (a collapsible menu replaces the sidebar below ~900px wide).
 - **Staff accounts & roles** — three roles (Admin, Front desk, Therapist)
   with different levels of access, so a therapist can work the Swarna
   Prashana calling queue and vaccination schedule without seeing fees or
@@ -34,9 +35,12 @@ A Node.js + SQLite application for a clinic that handles:
 - **Audit log** — every action that changes data (adding a patient,
   recording a payment, booking an appointment, etc.) is automatically
   recorded with who did it and when, visible to admins.
-- **PDF documents** — invoices, receipts, vaccination certificates, medical
-  certificates, and insurance bills, all generated instantly in the browser
-  with your clinic's letterhead (set once under Settings).
+- **PDF documents** — invoices, receipts, proof of payment, medical
+  certificates, patient attendance & treatment records, treatment summaries,
+  and vaccination certificates, all generated instantly in the browser with
+  your clinic's letterhead (set once under Settings). A dedicated
+  **Documents** page lets you search for any patient and prepare any of
+  these without navigating anywhere else first.
 
 ---
 
@@ -181,7 +185,10 @@ code needs to change.
   active patient are skipped rather than creating a duplicate. The response
   reports exactly how many rows were imported vs. skipped, with a reason for
   each skip. A "Download CSV template" link in the import dialog gives a
-  ready-made starting point.
+  ready-made starting point. To auto-enroll a row in Swarna Prashana at
+  import time, add an **enroll_swarna** column (accepts yes/true/1/x — case
+  insensitive) and optionally a **swarna_start_date** column (defaults to
+  today if left blank); the response reports how many rows were enrolled.
 - **Swarna Prashana monthly tracking**: besides the rolling "Calling queue"
   (which always shows anything due now or overdue, so nothing gets lost),
   the **Monthly report** tab lets you pick any calendar month
@@ -219,20 +226,44 @@ code needs to change.
   the WhatsApp Business API described above, with its own phone number and
   per-minute cost. That's a reasonable next step once you're ready to invest
   in it, but wasn't necessary to get a working calling workflow today.
-- **PDF documents**: from the **Fees** page, every fee record has an
-  Invoice (unpaid) or Receipt (paid) button. From a patient's **Documents**
-  tab, you can generate a **Vaccination Certificate** (auto-filled from that
-  patient's administered doses), a **Medical Certificate** (free-text, with
-  a few templates to start from), or an **Insurance Bill** (pick which fee
-  records to include, plus a diagnosis/treatment notes field). All of these
-  are generated **entirely in the browser** using jsPDF, loaded from a CDN —
-  deliberately kept off the server so there's no new native dependency to
-  install (the same reasoning as the `node:sqlite` switch earlier). The
-  one tradeoff: the browser needs an internet connection **the first time**
-  it generates a PDF, to fetch those library files (the browser caches them
-  after that, so it isn't needed on every single PDF). If your clinic's
-  computer genuinely has no internet access at all, let me know and this
-  can be swapped for a server-side approach instead.
+- **PDF documents**: the **Documents** page in the sidebar is the main way
+  in — search for a patient, pick a document type, fill in the form, and
+  download. Seven document types are available:
+  - **Medical Certificate** — a clinical-narrative certificate (symptoms,
+    diagnosis, advised rest) composed from a short form
+  - **Patient Attendance & Treatment Record** — a daily attendance table
+    for a treatment period, editable day by day (click "Build daily table"
+    after picking the dates to get one row per day, each independently
+    editable — useful when treatment varies day to day or a session was
+    cut short), with the therapist-sign column left blank for physical
+    sign-off, plus a doctor's review note
+  - **Treatment Summary** — a discharge-style letter: complaint, diagnosis,
+    response to treatment, itemized therapies and follow-up medications,
+    and total amount paid
+  - **Vaccination Certificate** — auto-filled from a patient's administered
+    vaccination history, no form needed
+  - **Proof of Payment** — a payment receipt with the amount spelled out in
+    words using the Indian numbering system (e.g. "One Lakh Twenty Eight
+    Thousand Five Hundred Rupees Only")
+  - **Insurance Bill** — pick which fee records to include, plus a
+    diagnosis/treatment notes field, for insurance reimbursement claims
+  - **Invoice / Receipt** — also available per-record on the **Fees** page
+    itself, for a quick one-click download without leaving that page
+
+  Every document is signed with a doctor name + registration number, which
+  defaults from **Settings** (admin-only, under "Default signing doctor")
+  but can be overridden per document.
+
+  All of these are generated **entirely in the browser** using jsPDF,
+  loaded from a CDN — deliberately kept off the server so there's no new
+  native dependency to install (the same reasoning as the `node:sqlite`
+  switch earlier). The one tradeoff: the browser needs an internet
+  connection **the first time** it generates a PDF, to fetch those library
+  files (the browser caches them after that, so it isn't needed on every
+  single PDF). If your clinic's computer genuinely has no internet access
+  at all, let me know and this can be swapped for a server-side approach
+  instead.
+
   The letterhead on every document comes from **Settings** (admin-only) —
   set your clinic name, address, phone, email, and registration number once
   and it's used everywhere.

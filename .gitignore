@@ -5,4 +5,3 @@ clinic.db-wal
 clinic.db-shm
 .env
 *.log
-*.sqlite

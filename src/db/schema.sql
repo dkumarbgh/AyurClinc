@@ -206,5 +206,7 @@ CREATE TABLE IF NOT EXISTS clinic_settings (
   phone TEXT,
   email TEXT,
   registration_number TEXT,
+  default_doctor_name TEXT,
+  default_doctor_reg_no TEXT,
   updated_at TEXT DEFAULT (datetime('now'))
 );

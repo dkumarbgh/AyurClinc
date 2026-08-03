@@ -34,7 +34,12 @@
 
 <!-- ================= APP SHELL ================= -->
 <div id="app-shell" class="hidden">
-  <aside class="sidebar">
+  <div class="mobile-topbar">
+    <button id="hamburger-btn" aria-label="Open menu">&#9776;</button>
+    <div class="brand">Clinic<span>Manager</span></div>
+  </div>
+  <div id="sidebar-backdrop"></div>
+  <aside class="sidebar" id="sidebar">
     <div class="brand">Clinic<span>Manager</span></div>
     <nav id="nav-list">
       <button class="nav-item" data-route="dashboard"><span class="icon">&#9670;</span> Dashboard</button>
@@ -44,6 +49,7 @@
       <button class="nav-item" data-route="rooms"><span class="icon">&#9636;</span> Rooms &amp; Appointments</button>
       <button class="nav-item" data-route="therapists"><span class="icon">&#9781;</span> Therapists</button>
       <button class="nav-item" data-route="fees"><span class="icon">&#8377;</span> Fees</button>
+      <button class="nav-item" data-route="documents"><span class="icon">&#128196;</span> Documents</button>
       <button class="nav-item" data-route="whatsapp"><span class="icon">&#9993;</span> WhatsApp Log</button>
       <button class="nav-item" data-route="users" id="nav-users"><span class="icon">&#9776;</span> Users</button>
       <button class="nav-item" data-route="audit-log" id="nav-audit-log"><span class="icon">&#128269;</span> Audit Log</button>
@@ -75,6 +81,7 @@
 <script src="/js/views/rooms.js"></script>
 <script src="/js/views/therapists.js"></script>
 <script src="/js/views/fees.js"></script>
+<script src="/js/views/documents.js"></script>
 <script src="/js/views/whatsapp.js"></script>
 <script src="/js/views/users.js"></script>
 <script src="/js/views/auditLog.js"></script>

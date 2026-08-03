@@ -65,7 +65,7 @@ router.post('/enrollments', (req, res) => {
     return res.status(409).json({ error: 'This patient already has an active Swarna Prashana enrollment.' });
   }
 
-  const enrollment = enrollPatientInSwarnaPrashana(patient_id, start_date, notes);
+  const enrollment = db.transaction(() => enrollPatientInSwarnaPrashana(patient_id, start_date, notes))();
   res.status(201).json(enrollment);
 });
 

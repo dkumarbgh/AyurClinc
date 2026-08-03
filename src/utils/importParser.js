@@ -17,6 +17,8 @@ const HEADER_ALIASES = {
   guardian_phone: ['guardianphone', 'guardiannumber', 'guardiancontact', 'parentphone', 'parentnumber'],
   blood_group: ['bloodgroup', 'bloodtype'],
   medical_notes: ['medicalnotes', 'notes', 'remarks', 'comments'],
+  enroll_swarna: ['enrollswarna', 'enrollswarnaprashana', 'swarnaprashana', 'swarna', 'enrollinswarnaprashana'],
+  swarna_start_date: ['swarnastartdate', 'swarnaprashanastartdate', 'swarnadosedate', 'firstdosedate'],
 };
 
 function normalizeKey(key) {
@@ -84,4 +86,11 @@ function parseFileToRows(buffer, originalFilename) {
   return XLSX.utils.sheet_to_json(sheet, { defval: null, raw: false, dateNF: 'yyyy-mm-dd' });
 }
 
-module.exports = { parseFileToRows, mapRowToPatient, normalizeDob };
+/** Parses common "yes" spellings from a spreadsheet cell into a boolean. */
+function isTruthy(value) {
+  if (value === null || value === undefined) return false;
+  const v = String(value).trim().toLowerCase();
+  return ['yes', 'y', 'true', '1', 'x'].includes(v);
+}
+
+module.exports = { parseFileToRows, mapRowToPatient, normalizeDob, isTruthy };

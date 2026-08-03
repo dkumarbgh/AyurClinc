@@ -9,6 +9,7 @@ const App = (() => {
     rooms: () => Views.Rooms.render(),
     therapists: () => Views.Therapists.render(),
     fees: () => Views.Fees.render(),
+    documents: () => Views.Documents.render(),
     whatsapp: () => Views.Whatsapp.render(),
     users: () => Views.Users.render(),
     'audit-log': () => Views.AuditLog.render(),
@@ -61,6 +62,7 @@ const App = (() => {
     if (!routes[route]) route = 'dashboard';
     location.hash = route;
     setActiveNav(route);
+    closeSidebar();
     const root = document.getElementById('view-root');
     root.innerHTML = '<div class="empty-state">Loading&hellip;</div>';
     Promise.resolve(routes[route]()).catch((err) => {
@@ -155,11 +157,22 @@ const App = (() => {
     });
   }
 
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-backdrop').classList.add('open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-backdrop').classList.remove('open');
+  }
+
   function initShellEvents() {
     document.getElementById('nav-list').addEventListener('click', (e) => {
       const btn = e.target.closest('.nav-item');
       if (btn) navigate(btn.dataset.route);
     });
+    document.getElementById('hamburger-btn').addEventListener('click', openSidebar);
+    document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
     document.getElementById('logout-btn').addEventListener('click', () => {
       Api.clearToken();
       showLogin();

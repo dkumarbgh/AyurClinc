@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const db = require('../db/connection');
 const { nextPatientCode, paginationParams, todayStr } = require('../utils/helpers');
-const { parseFileToRows, mapRowToPatient, normalizeDob } = require('../utils/importParser');
+const { parseFileToRows, mapRowToPatient, normalizeDob, isTruthy } = require('../utils/importParser');
 const { requireRole } = require('../middleware/auth');
 const { enrollPatientInSwarnaPrashana } = require('../services/swarnaPrashanaService');
 
@@ -103,7 +103,9 @@ router.post('/', staffOnly, (req, res) => {
   let swarna_enrollment = null;
   const wantsEnrollment = enroll_swarna === true || enroll_swarna === 'true' || enroll_swarna === 'on';
   if (wantsEnrollment) {
-    swarna_enrollment = enrollPatientInSwarnaPrashana(patient.id, swarna_start_date || todayStr());
+    swarna_enrollment = db.transaction(() =>
+      enrollPatientInSwarnaPrashana(patient.id, swarna_start_date || todayStr())
+    )();
   }
 
   res.status(201).json({ ...patient, swarna_enrollment });
@@ -135,7 +137,7 @@ router.post('/import', staffOnly, upload.single('file'), (req, res) => {
   );
   const findByPhone = db.prepare("SELECT id FROM patients WHERE phone = ? AND status = 'active'");
 
-  const results = { imported: 0, skipped: 0, errors: [] };
+  const results = { imported: 0, skipped: 0, swarnaEnrolled: 0, errors: [] };
 
   const runImport = db.transaction(() => {
     rawRows.forEach((rawRow, index) => {
@@ -158,7 +160,7 @@ router.post('/import', staffOnly, upload.single('file'), (req, res) => {
         : null;
 
       try {
-        insertStmt.run({
+        const info = insertStmt.run({
           patient_code: nextPatientCode(),
           full_name: mapped.full_name,
           dob: normalizeDob(mapped.dob),
@@ -173,6 +175,16 @@ router.post('/import', staffOnly, upload.single('file'), (req, res) => {
           medical_notes: mapped.medical_notes || null,
         });
         results.imported++;
+
+        if (isTruthy(mapped.enroll_swarna)) {
+          const startDate = mapped.swarna_start_date ? normalizeDob(mapped.swarna_start_date) : todayStr();
+          try {
+            enrollPatientInSwarnaPrashana(info.lastInsertRowid, startDate);
+            results.swarnaEnrolled++;
+          } catch (enrollErr) {
+            results.errors.push({ row: rowNum, reason: `Imported, but Swarna Prashana enrollment failed: ${enrollErr.message}` });
+          }
+        }
       } catch (err) {
         results.skipped++;
         results.errors.push({ row: rowNum, reason: err.message });
