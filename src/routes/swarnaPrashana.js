@@ -11,6 +11,10 @@ function ensureNextDose(enrollmentId, patientId, afterDoseNumber, afterScheduled
   const enrollment = db.prepare('SELECT * FROM swarna_prashana_enrollments WHERE id = ?').get(enrollmentId);
   if (!enrollment || enrollment.status !== 'active') return null;
 
+  // Don't keep scheduling future doses for a patient who's been deactivated.
+  const patient = db.prepare('SELECT status FROM patients WHERE id = ?').get(patientId);
+  if (!patient || patient.status !== 'active') return null;
+
   const nextDoseNumber = afterDoseNumber + 1;
   const existing = db
     .prepare('SELECT * FROM swarna_prashana_doses WHERE enrollment_id = ? AND dose_number = ?')
@@ -95,7 +99,7 @@ router.get('/doses', (req, res) => {
   until.setUTCDate(until.getUTCDate() + days);
   const untilStr = until.toISOString().slice(0, 10);
 
-  const conditions = ['d.scheduled_date <= @until'];
+  const conditions = ['d.scheduled_date <= @until', "p.status = 'active'"];
   const params = { until: untilStr };
   if (call_status) { conditions.push('d.call_status = @call_status'); params.call_status = call_status; }
   const whereClause = `WHERE ${conditions.join(' AND ')}`;
@@ -123,7 +127,7 @@ router.get('/doses/monthly', (req, res) => {
       `SELECT d.*, p.full_name, p.patient_code, p.phone, p.whatsapp_number, p.guardian_name, p.guardian_phone
        FROM swarna_prashana_doses d
        JOIN patients p ON p.id = d.patient_id
-       WHERE d.scheduled_date BETWEEN ? AND ?
+       WHERE d.scheduled_date BETWEEN ? AND ? AND p.status = 'active'
        ORDER BY d.scheduled_date ASC`
     )
     .all(from, to);

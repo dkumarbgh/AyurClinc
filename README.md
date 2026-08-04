@@ -197,7 +197,12 @@ code needs to change.
   how many parents still haven't been reached, and how many declined —
   along with the full list for that month, with the same call/WhatsApp/log
   actions available right there. This is the view to use for a monthly
-  review or handoff between staff.
+  review or handoff between staff. Both the calling queue and the monthly
+  report automatically exclude patients who've been marked inactive — no
+  need to remember to stop calling someone after deactivating their record,
+  and the system also stops auto-scheduling future doses for them. (Their
+  enrollment still shows up in the **Enrollments** tab for admins, for
+  record-keeping — it's only hidden from the actionable call list.)
 - **Swarna Prashana**: enrolling a patient (`POST /api/swarna-prashana/enrollments`)
   creates an `active` enrollment plus a single dose record for the first
   month. Each dose has two independent statuses: `call_status` (whether staff

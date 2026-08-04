@@ -30,7 +30,7 @@ Views.Documents = (() => {
         <label>Patient</label>
         <input id="doc-patient-search" placeholder="Type to search by name or phone&hellip;" autocomplete="off" value="${state.patient ? App.escapeHtml(state.patient.full_name) : ''}" />
         <div id="doc-patient-results" style="max-height:160px; overflow-y:auto;"></div>
-        ${state.patient ? `<p class="helper-text" style="margin-top:8px;">${App.escapeHtml(state.patient.patient_code)} &middot; ${App.escapeHtml(state.patient.phone)} <a href="#" id="doc-change-patient">(change)</a></p>` : ''}
+        ${state.patient ? `<p class="helper-text" style="margin-top:8px;">${App.escapeHtml(state.patient.patient_code)} &middot; ${App.escapeHtml(App.fmtPhone(state.patient.phone))} <a href="#" id="doc-change-patient">(change)</a></p>` : ''}
       </div>
       ${state.patient ? `
         <div class="tab-row" style="flex-wrap:wrap;">
@@ -63,7 +63,7 @@ Views.Documents = (() => {
         const result = await Api.get(`/api/patients?search=${encodeURIComponent(q)}&limit=8`);
         document.getElementById('doc-patient-results').innerHTML = result.data.map((p) => `
           <div class="patient-pick" data-id="${p.id}" style="padding:7px 4px; cursor:pointer; border-bottom:1px solid var(--line); font-size:13px;">
-            ${App.escapeHtml(p.full_name)} <span class="helper-text">${App.escapeHtml(p.patient_code)} &middot; ${App.escapeHtml(p.phone)}</span>
+            ${App.escapeHtml(p.full_name)} <span class="helper-text">${App.escapeHtml(p.patient_code)} &middot; ${App.escapeHtml(App.fmtPhone(p.phone))}</span>
           </div>`).join('') || `<div class="helper-text">No matches.</div>`;
         document.querySelectorAll('.patient-pick').forEach((row) => {
           row.addEventListener('click', async () => {

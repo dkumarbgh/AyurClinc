@@ -59,7 +59,7 @@ Views.Patients = (() => {
             <tr>
               <td>${App.escapeHtml(p.patient_code)}</td>
               <td><a href="#" class="patient-link" data-id="${p.id}">${App.escapeHtml(p.full_name)}</a></td>
-              <td>${App.escapeHtml(p.phone)}</td>
+              <td>${App.escapeHtml(App.fmtPhone(p.phone))}</td>
               <td>${App.escapeHtml(p.gender || '&mdash;')}</td>
               <td><span class="badge ${p.status === 'active' ? 'sage' : 'gray'}">${p.status}</span></td>
               <td><button class="btn secondary small edit-patient-btn" data-id="${p.id}">Edit</button></td>
@@ -240,7 +240,7 @@ Views.Patients = (() => {
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
             <h3 class="section-title" style="margin-bottom:2px;">${App.escapeHtml(p.full_name)}</h3>
-            <div class="helper-text">${App.escapeHtml(p.patient_code)} &middot; ${App.escapeHtml(p.phone)} ${p.dob ? '&middot; DOB ' + App.fmtDate(p.dob) : ''}</div>
+            <div class="helper-text">${App.escapeHtml(p.patient_code)} &middot; ${App.escapeHtml(App.fmtPhone(p.phone))} ${p.dob ? '&middot; DOB ' + App.fmtDate(p.dob) : ''}</div>
           </div>
           <button class="btn secondary small" id="close-detail">Close</button>
         </div>

@@ -64,18 +64,19 @@ Views.SwarnaPrashana = (() => {
         <tbody>
           ${rows.map((r) => {
             const contactNumber = r.guardian_phone || r.whatsapp_number || r.phone;
+            const contactDisplay = App.fmtPhone(contactNumber);
             const waMsg = `Hi, this is a reminder from the clinic about ${r.full_name}'s Swarna Prashana dose scheduled for ${r.scheduled_date}. Could you confirm if you'll be able to bring them in?`;
             return `
             <tr>
               <td>${App.escapeHtml(r.full_name)} <span class="helper-text">${App.escapeHtml(r.patient_code)}</span>${r.guardian_name ? `<br/><span class="helper-text">Guardian: ${App.escapeHtml(r.guardian_name)}</span>` : ''}</td>
-              <td>${App.escapeHtml(contactNumber)}</td>
+              <td>${App.escapeHtml(contactDisplay)}</td>
               <td>#${r.dose_number}</td>
               <td>${App.fmtDate(r.scheduled_date)}</td>
               <td>${callBadge(r.call_status)}</td>
               <td>${doseBadge(r.dose_status)}</td>
               <td>
-                <a class="icon-btn call" href="${App.telLink(contactNumber)}" title="Call ${App.escapeHtml(contactNumber)}">&#9742;</a>
-                <a class="icon-btn whatsapp" target="_blank" rel="noopener" href="${App.waLink(contactNumber, waMsg)}" title="WhatsApp ${App.escapeHtml(contactNumber)}">&#9993;</a>
+                <a class="icon-btn call" href="${App.telLink(contactNumber)}" title="Call ${App.escapeHtml(contactDisplay)}">&#9742;</a>
+                <a class="icon-btn whatsapp" target="_blank" rel="noopener" href="${App.waLink(contactNumber, waMsg)}" title="WhatsApp ${App.escapeHtml(contactDisplay)}">&#9993;</a>
               </td>
               <td style="white-space:nowrap;">
                 <button class="btn secondary small log-call-btn" data-id="${r.id}" data-name="${App.escapeHtml(r.full_name)}">Log call</button>
@@ -217,18 +218,19 @@ Views.SwarnaPrashana = (() => {
         <tbody>
           ${result.doses.map((r) => {
             const contactNumber = r.guardian_phone || r.whatsapp_number || r.phone;
+            const contactDisplay = App.fmtPhone(contactNumber);
             const waMsg = `Hi, this is a reminder from the clinic about ${r.full_name}'s Swarna Prashana dose scheduled for ${r.scheduled_date}. Could you confirm if you'll be able to bring them in?`;
             return `
             <tr>
               <td>${App.escapeHtml(r.full_name)} <span class="helper-text">${App.escapeHtml(r.patient_code)}</span></td>
-              <td>${App.escapeHtml(contactNumber)}</td>
+              <td>${App.escapeHtml(contactDisplay)}</td>
               <td>#${r.dose_number}</td>
               <td>${App.fmtDate(r.scheduled_date)}</td>
               <td>${callBadge(r.call_status)}</td>
               <td>${doseBadge(r.dose_status)}</td>
               <td>
-                <a class="icon-btn call" href="${App.telLink(contactNumber)}" title="Call ${App.escapeHtml(contactNumber)}">&#9742;</a>
-                <a class="icon-btn whatsapp" target="_blank" rel="noopener" href="${App.waLink(contactNumber, waMsg)}" title="WhatsApp ${App.escapeHtml(contactNumber)}">&#9993;</a>
+                <a class="icon-btn call" href="${App.telLink(contactNumber)}" title="Call ${App.escapeHtml(contactDisplay)}">&#9742;</a>
+                <a class="icon-btn whatsapp" target="_blank" rel="noopener" href="${App.waLink(contactNumber, waMsg)}" title="WhatsApp ${App.escapeHtml(contactDisplay)}">&#9993;</a>
               </td>
               <td style="white-space:nowrap;">
                 <button class="btn secondary small log-call-btn" data-id="${r.id}" data-name="${App.escapeHtml(r.full_name)}">Log call</button>
@@ -324,7 +326,7 @@ Views.SwarnaPrashana = (() => {
         const result = await Api.get(`/api/patients?search=${encodeURIComponent(q)}&limit=6`);
         document.getElementById('patient-search-results').innerHTML = result.data.map((p) => `
           <div class="patient-pick" data-id="${p.id}" data-name="${App.escapeHtml(p.full_name)}" style="padding:7px 4px; cursor:pointer; border-bottom:1px solid var(--line); font-size:13px;">
-            ${App.escapeHtml(p.full_name)} <span class="helper-text">${App.escapeHtml(p.patient_code)} &middot; ${App.escapeHtml(p.phone)}</span>
+            ${App.escapeHtml(p.full_name)} <span class="helper-text">${App.escapeHtml(p.patient_code)} &middot; ${App.escapeHtml(App.fmtPhone(p.phone))}</span>
           </div>`).join('') || `<div class="helper-text">No matches.</div>`;
         document.querySelectorAll('.patient-pick').forEach((row) => {
           row.addEventListener('click', () => {

@@ -42,7 +42,7 @@ Views.Vaccinations = (() => {
           ${rows.map((r) => `
             <tr>
               <td>${App.escapeHtml(r.full_name)}</td>
-              <td>${App.escapeHtml(r.phone)}</td>
+              <td>${App.escapeHtml(App.fmtPhone(r.phone))}</td>
               <td>${App.escapeHtml(r.vaccine_name)}</td>
               <td>${r.dose_number}</td>
               <td><span class="badge ${state.tab === 'due' ? 'ochre' : 'coral'}">${App.fmtDate(r.scheduled_date)}</span></td>
@@ -127,7 +127,7 @@ Views.Vaccinations = (() => {
         const result = await Api.get(`/api/patients?search=${encodeURIComponent(q)}&limit=6`);
         document.getElementById('patient-search-results').innerHTML = result.data.map((p) => `
           <div class="patient-pick" data-id="${p.id}" data-name="${App.escapeHtml(p.full_name)}" style="padding:7px 4px; cursor:pointer; border-bottom:1px solid var(--line); font-size:13px;">
-            ${App.escapeHtml(p.full_name)} <span class="helper-text">${App.escapeHtml(p.patient_code)} &middot; ${App.escapeHtml(p.phone)}</span>
+            ${App.escapeHtml(p.full_name)} <span class="helper-text">${App.escapeHtml(p.patient_code)} &middot; ${App.escapeHtml(App.fmtPhone(p.phone))}</span>
           </div>`).join('') || `<div class="helper-text">No matches.</div>`;
         document.querySelectorAll('.patient-pick').forEach((row) => {
           row.addEventListener('click', () => {

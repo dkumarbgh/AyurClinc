@@ -110,6 +110,15 @@ const App = (() => {
     return 'Rs. ' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  /** Formats a phone number for display as "+91 9900502056" (Indian numbering). Leaves anything that doesn't look like an Indian number unchanged. */
+  function fmtPhone(phone) {
+    if (!phone) return '';
+    const digits = String(phone).replace(/[^\d]/g, '');
+    if (digits.length === 12 && digits.startsWith('91')) return '+91 ' + digits.slice(2);
+    if (digits.length === 10) return '+91 ' + digits;
+    return phone;
+  }
+
   /** Digits-only phone number (keeps country code, strips +, spaces, dashes). */
   function digitsOnly(phone) {
     return String(phone || '').replace(/[^\d]/g, '');
@@ -200,5 +209,5 @@ const App = (() => {
     });
   }
 
-  return { navigate, toast, openModal, closeModal, escapeHtml, fmtDate, fmtMoney, telLink, waLink, currentUser, showLogin, showApp, initShellEvents };
+  return { navigate, toast, openModal, closeModal, escapeHtml, fmtDate, fmtMoney, fmtPhone, telLink, waLink, currentUser, showLogin, showApp, initShellEvents };
 })();

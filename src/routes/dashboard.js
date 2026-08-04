@@ -45,8 +45,10 @@ router.get('/summary', (req, res) => {
 
   const swarnaCallsDue = db
     .prepare(
-      `SELECT COUNT(*) AS c FROM swarna_prashana_doses
-       WHERE call_status = 'not_called' AND scheduled_date BETWEEN ? AND date(?, '+7 days')`
+      `SELECT COUNT(*) AS c FROM swarna_prashana_doses d
+       JOIN patients p ON p.id = d.patient_id
+       WHERE d.call_status = 'not_called' AND d.scheduled_date BETWEEN ? AND date(?, '+7 days')
+         AND p.status = 'active'`
     )
     .get(today, today).c;
 

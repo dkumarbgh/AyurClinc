@@ -47,7 +47,7 @@ Views.Whatsapp = (() => {
             <tr>
               <td style="white-space:nowrap;">${App.fmtDate(m.created_at.slice(0, 10))}</td>
               <td>${App.escapeHtml(m.patient_name || '&mdash;')}</td>
-              <td>${App.escapeHtml(m.phone)}</td>
+              <td>${App.escapeHtml(App.fmtPhone(m.phone))}</td>
               <td><span class="badge gray">${m.message_type.replace('_', ' ')}</span></td>
               <td style="max-width:320px; white-space:normal;">${App.escapeHtml(m.message)}</td>
               <td><span class="badge ${m.status === 'sent' ? 'sage' : m.status === 'failed' ? 'coral' : 'ochre'}">${m.status}</span></td>
